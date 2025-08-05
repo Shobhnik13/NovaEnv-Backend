@@ -7,6 +7,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const config = require('./config/config');
 const authRouter = require('./routes/AuthRoutes');
+const projectRouter = require('./routes/ProjectRoutes');
 
 const app = express()
 
@@ -38,6 +39,7 @@ app.get('/health', (req, res) => {
 
 // routes
 app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/project', projectRouter)
 
 const startServer = async () => {
     try{
