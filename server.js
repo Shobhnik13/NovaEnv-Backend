@@ -6,6 +6,7 @@ const chalk = require('chalk');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const config = require('./config/config');
+const authRouter = require('./routes/AuthRoutes');
 
 const app = express()
 
@@ -34,6 +35,9 @@ app.use(cors());
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK' });
 })
+
+// routes
+app.use('/api/v1/auth', authRouter)
 
 const startServer = async () => {
     try{
