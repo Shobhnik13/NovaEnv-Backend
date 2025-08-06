@@ -9,6 +9,7 @@ const config = require('./config/config');
 const authRouter = require('./routes/AuthRoutes');
 const projectRouter = require('./routes/ProjectRoutes');
 const enviornmentRouter = require('./routes/EnviornmentRoutes');
+const variableRouter = require('./routes/VariableRoutes');
 
 const app = express()
 
@@ -42,6 +43,7 @@ app.get('/health', (req, res) => {
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/project', projectRouter)
 app.use('/api/v1/enviornment', enviornmentRouter)
+app.use('/api/v1/variable', variableRouter)
 
 const startServer = async () => {
     try{

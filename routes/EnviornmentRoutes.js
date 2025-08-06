@@ -4,9 +4,9 @@ const { createEnviornment, listEnviornments, editEnviornment, deleteEnviornment 
 
 const enviornmentRouter = express.Router();
 
-enviornmentRouter.post('/projects/:projectId/create-enviornment', createEnviornment)
-enviornmentRouter.post('/projects/:projectId/enviornments', listEnviornments)
-enviornmentRouter.put('/projects/enviornments/:enviornmentId', editEnviornment)
-enviornmentRouter.delete('/projects/enviornments/:enviornmentId', deleteEnviornment)
+enviornmentRouter.post('/projects/:projectId/create-enviornment', requireAuth, createEnviornment)
+enviornmentRouter.post('/projects/:projectId/enviornments', requireAuth, listEnviornments)
+enviornmentRouter.put('/projects/enviornments/:enviornmentId', requireAuth, editEnviornment)
+enviornmentRouter.delete('/projects/enviornments/:enviornmentId', requireAuth, deleteEnviornment)
 
 module.exports = enviornmentRouter;
