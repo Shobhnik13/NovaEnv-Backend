@@ -8,6 +8,7 @@ const connectDB = require('./config/db');
 const config = require('./config/config');
 const authRouter = require('./routes/AuthRoutes');
 const projectRouter = require('./routes/ProjectRoutes');
+const enviornmentRouter = require('./routes/EnviornmentRoutes');
 
 const app = express()
 
@@ -40,6 +41,7 @@ app.get('/health', (req, res) => {
 // routes
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/project', projectRouter)
+app.use('/api/v1/enviornment', enviornmentRouter)
 
 const startServer = async () => {
     try{
