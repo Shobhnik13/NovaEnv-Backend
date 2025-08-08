@@ -1,10 +1,11 @@
 const express = require('express');
 const requireAuth = require('../middleware/authMiddleware');
-const { listProjects, createProject, listProjectById, editProject, deleteProject } = require('../controllers/ProjectController');
+const { listProjects, createProject, listProjectById, editProject, deleteProject, analytics } = require('../controllers/ProjectController');
 
 const projectRouter = express.Router();
 
 projectRouter.post('/create-project', requireAuth, createProject)
+projectRouter.post('/analytics', requireAuth, analytics)
 projectRouter.post('/projects', requireAuth, listProjects)
 projectRouter.post('/projects/:projectId', requireAuth, listProjectById)
 projectRouter.put('/projects/:projectId', requireAuth, editProject)

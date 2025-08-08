@@ -5,25 +5,20 @@ const getOrCreateUser = require("../utils/GetOrCreateUser");
 const registerUser = async (req, res) => {
     try {
         const { userId: clerkId } = req.auth;
-        const { emailAddress } = req.auth.sessionClaims;
+        const { email } = req.body;
 
         // Validation
         if (!clerkId) {
             return res.status(400).json({ error: 'User ID is required' });
         }
 
-        if (!emailAddress) {
+        if (!email) {
             return res.status(400).json({ error: 'Email address is required' });
         }
 
-        const user = await getOrCreateUser(clerkId, emailAddress);
+        const user = await getOrCreateUser(clerkId, email);
 
-        res.status(200).json({
-            id: user._id,
-            email: user.email,
-            apiKey: user.apiKey,
-            createdAt: user.createdAt
-        });
+        res.status(200).json('synced');
     } catch (error) {
         console.error('Register user error:', error);
         res.status(500).json({

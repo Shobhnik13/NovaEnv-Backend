@@ -22,7 +22,7 @@ const createProject = async (req, res) => {
             userId: user._id
         });
         await project.save();
-        res.status(201).json(project);
+        res.status(200).json("Project created successfully");
     } catch (error) {
         console.error('Create project error:', error);
         res.status(500).json({
@@ -36,11 +36,48 @@ const listProjects = async (req, res) => {
     try {
         const { userId: clerkId } = req.auth
         const user = await User.findOne({ clerkId })
+
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        const projects = await Project.find({ userId: user._id }).sort({ createdAt: -1 });
-        res.json(projects)
+
+        const projects = await Project.find({ userId: user._id })
+            .select('name description projectId createdAt') 
+            .sort({ createdAt: -1 });
+
+        const projectIds = projects.map(project => project.projectId);
+
+        const [variableCounts, environmentCounts] = await Promise.all([
+            Variable.aggregate([
+                { $match: { projectId: { $in: projectIds } } },
+                { $group: { _id: '$projectId', count: { $sum: 1 } } }
+            ]),
+            Enviornment.aggregate([
+                { $match: { projectId: { $in: projectIds } } },
+                { $group: { _id: '$projectId', count: { $sum: 1 } } }
+            ])
+        ]);
+
+        const varCountMap = variableCounts.reduce((acc, item) => {
+            acc[item._id] = item.count;
+            return acc;
+        }, {});
+
+        const envCountMap = environmentCounts.reduce((acc, item) => {
+            acc[item._id] = item.count;
+            return acc;
+        }, {});
+
+        const projectsWithCounts = projects.map(project => ({
+            name: project.name,
+            description: project.description,
+            projectId: project.projectId,
+            totalVariables: varCountMap[project.projectId] || 0,
+            totalEnvironments: envCountMap[project.projectId] || 0
+        }));
+
+        res.json(projectsWithCounts);
+
     } catch (error) {
         console.error('List projects error:', error);
         res.status(500).json({
@@ -49,6 +86,38 @@ const listProjects = async (req, res) => {
         });
     }
 }
+const analytics = async (req, res) => {
+    try {
+        const { userId: clerkId } = req.auth;
+
+        // Find the user
+        const user = await User.findOne({ clerkId });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Get user's projects
+        const projects = await Project.find({ userId: user._id }).select('_id');
+        const projectIds = projects.map(p => p._id);
+
+        // Count items
+        const projectsCount = projects.length;
+        const environmentsCount = await Enviornment.countDocuments({ projectId: { $in: projectIds } });
+        const variablesCount = await Variable.countDocuments({ projectId: { $in: projectIds } });
+
+        res.json({
+            projects: projectsCount,
+            enviornments: environmentsCount,
+            variables: variablesCount
+        });
+    } catch (error) {
+        console.error('Analytics error:', error);
+        res.status(500).json({
+            error: 'Internal server error',
+            message: error.message || 'An error occurred while fetching analytics'
+        });
+    }
+};
 
 const listProjectById = async () => {
     try {
@@ -153,4 +222,4 @@ const deleteProject = async () => {
     }
 }
 
-module.exports = { createProject, listProjects, listProjectById, editProject, deleteProject };  
+module.exports = { createProject, listProjects, listProjectById, editProject, deleteProject, analytics };  

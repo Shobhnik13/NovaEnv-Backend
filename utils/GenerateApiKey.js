@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 const generateApiKey = () => {
     return 'evmgr_' + crypto.randomBytes(32).toString('hex');
 }
