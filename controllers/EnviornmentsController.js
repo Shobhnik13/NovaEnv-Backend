@@ -39,7 +39,7 @@ const listEnviornments = async (req, res) => {
     }
 };
 
-const createEnviornment = async () => {
+const createEnviornment = async (req, res) => {
     try {
         const { userId: clerkId } = req.auth;
         const { projectId } = req.params;
@@ -56,14 +56,14 @@ const createEnviornment = async () => {
             return res.status(404).json({ error: 'Project not found' });
         }
 
-        const environment = new Environment({
+        const environment = new Enviornment({
             name,
             description: description || '',
-            projectId
+            projectId: project._id,
         });
 
         await environment.save();
-        res.status(201).json(environment);
+        res.status(200).json('Environment created successfully');
     } catch (error) {
         if (error.code === 11000) {
             return res.status(400).json({ error: 'Environment name already exists in this project' });

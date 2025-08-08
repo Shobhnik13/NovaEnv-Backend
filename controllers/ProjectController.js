@@ -42,10 +42,10 @@ const listProjects = async (req, res) => {
         }
 
         const projects = await Project.find({ userId: user._id })
-            .select('name description projectId createdAt') 
+            .select('name description projectId createdAt _id')
             .sort({ createdAt: -1 });
 
-        const projectIds = projects.map(project => project.projectId);
+        const projectIds = projects.map(project => project._id);
 
         const [variableCounts, environmentCounts] = await Promise.all([
             Variable.aggregate([
@@ -59,21 +59,22 @@ const listProjects = async (req, res) => {
         ]);
 
         const varCountMap = variableCounts.reduce((acc, item) => {
-            acc[item._id] = item.count;
+            acc[item._id.toString()] = item.count;
             return acc;
         }, {});
 
         const envCountMap = environmentCounts.reduce((acc, item) => {
-            acc[item._id] = item.count;
+            acc[item._id.toString()] = item.count;
             return acc;
         }, {});
+
 
         const projectsWithCounts = projects.map(project => ({
             name: project.name,
             description: project.description,
             projectId: project.projectId,
-            totalVariables: varCountMap[project.projectId] || 0,
-            totalEnvironments: envCountMap[project.projectId] || 0
+            totalVariables: varCountMap[project._id.toString()] || 0,
+            totalEnvironments: envCountMap[project._id.toString()] || 0
         }));
 
         res.json(projectsWithCounts);
@@ -86,6 +87,7 @@ const listProjects = async (req, res) => {
         });
     }
 }
+
 const analytics = async (req, res) => {
     try {
         const { userId: clerkId } = req.auth;
@@ -119,7 +121,7 @@ const analytics = async (req, res) => {
     }
 };
 
-const listProjectById = async () => {
+const listProjectById = async (req, res) => {
     try {
         const { userId: clerkId } = req.auth
         const { projectId } = req.params
@@ -130,11 +132,20 @@ const listProjectById = async () => {
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        const project = await Project.findOne({ projectId: projectId, userId: user._id });
+        const project = await Project.findOne({ projectId: projectId, userId: user._id }).lean();
         if (!project) {
             return res.status(404).json({ error: 'Project not found' });
         }
-        res.json(project)
+        const envs = await Enviornment.find({ projectId: project?._id })
+        .select('name updatedAt -_id')
+        .sort({ updatedAt: -1 })
+
+        res.json({
+            projectId: project.projectId,
+            name: project.name,
+            description: project.description,
+            envs: envs.length > 0 ? envs : [],
+        });
     } catch (error) {
         console.error('List project by id error:', error);
         res.status(500).json({
@@ -144,7 +155,7 @@ const listProjectById = async () => {
     }
 }
 
-const editProject = async () => {
+const editProject = async (req, res) => {
     try {
         const { userId: clerkId } = req.auth
         const { projectId } = req.params
@@ -196,7 +207,7 @@ const editProject = async () => {
     }
 }
 
-const deleteProject = async () => {
+const deleteProject = async (req, res) => {
     try {
         const { userId: clerkId } = req.auth;
         const { projectId } = req.params;
