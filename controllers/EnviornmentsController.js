@@ -149,7 +149,7 @@ const listEnviornmentById = async (req, res) => {
             return res.status(403).json({ error: 'Access denied' });
         }
 
-        const variables = await Variable.find({ enviornmentId: enviornment._id }).select('key value -_id');
+        const variables = await Variable.find({ enviornmentId: enviornment._id }).select('key value -_id') .sort({ updatedAt: -1 });;
         const decryptedVariables = await Promise.all(
             variables.map(async (variable) => ({
                 key: await decryptData(variable.key),
