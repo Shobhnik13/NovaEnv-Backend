@@ -2,6 +2,7 @@ const Enviornment = require("../models/EnviornmentSchema");
 const Project = require("../models/ProjectSchema");
 const User = require("../models/UserSchema");
 const Variable = require("../models/VariableSchema");
+const { decryptData } = require("../utils/DecryptData");
 
 
 const listEnviornments = async (req, res) => {
@@ -132,9 +133,45 @@ const deleteEnviornment = async () => {
     }
 }
 
+const listEnviornmentById = async (req, res) => {
+    try {
+        const { userId: clerkId } = req.auth
+        const { enviornmentId, projectId } = req.params;
+
+        const user = await User.findOne({ clerkId })
+
+        const enviornment = await Enviornment.findOne({ enviornmentId: enviornmentId }).populate('projectId');
+        if (!enviornment) {
+            return res.status(404).json({ error: 'enviornment not found' });
+        }
+
+        if (enviornment.projectId.userId.toString() !== user._id.toString()) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+
+        const variables = await Variable.find({ enviornmentId: enviornment._id }).select('key value -_id');
+        const decryptedVariables = await Promise.all(
+            variables.map(async (variable) => ({
+                key: await decryptData(variable.key),
+                value: await decryptData(variable.value),
+            }))
+        );
+        return res.status(200).json({
+            enviornmentId: enviornment.enviornmentId,
+            name: enviornment.name,
+            description: enviornment.description,
+            variables: decryptedVariables
+        });
+    } catch (error) {
+        console.error('Fetch environment by id error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 module.exports = {
     createEnviornment,
     listEnviornments,
     editEnviornment,
-    deleteEnviornment
+    deleteEnviornment,
+    listEnviornmentById
 }

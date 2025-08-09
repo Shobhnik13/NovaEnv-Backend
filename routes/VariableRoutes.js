@@ -4,7 +4,7 @@ const { createVariables, listVariables } = require('../controllers/VariableContr
 
 const variableRouter = express.Router();
 
-variableRouter.post('/create-variable/:enviornmentId', createVariables)
+variableRouter.post('/project/:projectId/create-variable/:enviornmentId', requireAuth, createVariables)
 variableRouter.post('/variables/:enviornmentId', listVariables)
 
 module.exports = variableRouter;

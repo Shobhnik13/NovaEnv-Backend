@@ -137,7 +137,7 @@ const listProjectById = async (req, res) => {
             return res.status(404).json({ error: 'Project not found' });
         }
         const envs = await Enviornment.find({ projectId: project?._id })
-        .select('name updatedAt -_id')
+        .select('name updatedAt enviornmentId -_id ')
         .sort({ updatedAt: -1 })
 
         res.json({
