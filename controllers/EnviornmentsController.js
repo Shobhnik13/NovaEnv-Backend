@@ -74,11 +74,11 @@ const createEnviornment = async (req, res) => {
     }
 }
 
-const editEnviornment = async () => {
+const editEnviornment = async (req, res) => {
     try {
         const { userId: clerkId } = req.auth;
         const { enviornmentId } = req.params;
-        const { name, description } = req.body;
+        const { name } = req.body;
         const user = await User.findOne({ clerkId });
 
         const enviornment = await Enviornment.findOne({ enviornmentId: enviornmentId }).populate('projectId');
@@ -92,11 +92,10 @@ const editEnviornment = async () => {
         }
 
         enviornment.name = name || enviornment.name;
-        enviornment.description = description !== undefined ? description : enviornment.description;
         enviornment.updatedAt = new Date();
 
         await enviornment.save();
-        res.json(enviornment);
+        res.status(200).json({ message: "Enviornment updated successfully" });
     } catch (error) {
         if (error.code === 11000) {
             return res.status(400).json({ error: 'Environment name already exists in this project' });
@@ -106,7 +105,7 @@ const editEnviornment = async () => {
     }
 }
 
-const deleteEnviornment = async () => {
+const deleteEnviornment = async (req, res) => {
     try {
         const { userId: clerkId } = req.auth;
         const { enviornmentId } = req.params;
@@ -122,7 +121,7 @@ const deleteEnviornment = async () => {
             return res.status(403).json({ error: 'Access denied' });
         }
 
-        await Variable.deleteMany({ enviornmentId });
+        await Variable.deleteMany({ enviornmentId: enviornment?._id });
 
         await Enviornment.findByIdAndDelete(enviornment._id);
 
@@ -149,17 +148,17 @@ const listEnviornmentById = async (req, res) => {
             return res.status(403).json({ error: 'Access denied' });
         }
 
-        const variables = await Variable.find({ enviornmentId: enviornment._id }).select('key value -_id') .sort({ updatedAt: -1 });;
+        const variables = await Variable.find({ enviornmentId: enviornment._id }).select('key value variableId -_id').sort({ updatedAt: -1 });;
         const decryptedVariables = await Promise.all(
             variables.map(async (variable) => ({
                 key: await decryptData(variable.key),
                 value: await decryptData(variable.value),
+                variableId: variable.variableId
             }))
         );
         return res.status(200).json({
             enviornmentId: enviornment.enviornmentId,
             name: enviornment.name,
-            description: enviornment.description,
             variables: decryptedVariables
         });
     } catch (error) {

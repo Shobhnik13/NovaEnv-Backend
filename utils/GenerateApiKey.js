@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
 const generateApiKey = () => {
-    return 'evmgr_' + crypto.randomBytes(32).toString('hex');
+    return 'sh_sps_' + crypto.randomBytes(32).toString('hex');
 }
 module.exports = generateApiKey

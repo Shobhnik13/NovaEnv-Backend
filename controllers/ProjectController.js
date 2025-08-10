@@ -223,7 +223,6 @@ const deleteProject = async (req, res) => {
         await Enviornment.deleteMany({ projectId: project?._id })
         await Variable.deleteMany({ projectId: project?._id })
         await Project.deleteMany({ _id: project?._id })
-        
         res.json({ message: 'Project deleted successfully' });
     } catch (error) {
         console.error('Delete project error:', error);

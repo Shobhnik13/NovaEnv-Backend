@@ -39,7 +39,6 @@ const regenerateApiKey = async (req, res) => {
         user.apiKey = generateApiKey()
         await user.save();
         res.status(200).json({
-            message: 'API key regenerated successfully',
             apiKey: user.apiKey
         });
     } catch (error) {
@@ -51,4 +50,23 @@ const regenerateApiKey = async (req, res) => {
     }
 }
 
-module.exports = { registerUser, regenerateApiKey };
+const listApiKey = async (req, res) => {
+    try {
+        const { userId: clerkId } = req.auth
+        const user = await User.findOne({ clerkId })
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.status(200).json({
+            apiKey: user.apiKey
+        });
+    } catch (error) {
+        console.error('Fetch API key error:', error);
+        res.status(500).json({
+            error: 'Internal server error',
+            message: error.message || 'An error occurred while fetching the API key'
+        });
+    }
+}
+
+module.exports = { registerUser, regenerateApiKey, listApiKey };
