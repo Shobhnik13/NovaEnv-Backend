@@ -187,12 +187,12 @@ const editProject = async (req, res) => {
         updateFields.updatedAt = new Date();
         const project = await Project.findOneAndUpdate({
             projectId: projectId,
-            uderId: user?._id
+            userId: user?._id
         },
-            updateFields,
+        updateFields,
             { new: true }
         )
-
+        
         if (!project) {
             return res.status(404).json({ error: 'Project not found' });
         }
@@ -215,14 +215,15 @@ const deleteProject = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        const project = await Project.findOne({ _id: projectId, userId: user._id });
+        const project = await Project.findOne({ projectId: projectId, userId: user._id });
         if (!project) {
             return res.status(404).json({ error: 'Project not found' });
         }
 
-        await Variable.deleteMany({ projectId: projectId })
-        await Enviornment.deleteMany({ projectId: projectId })
-        await Project.deleteMany({ projectId: projectId })
+        await Enviornment.deleteMany({ projectId: project?._id })
+        await Variable.deleteMany({ projectId: project?._id })
+        await Project.deleteMany({ _id: project?._id })
+        
         res.json({ message: 'Project deleted successfully' });
     } catch (error) {
         console.error('Delete project error:', error);

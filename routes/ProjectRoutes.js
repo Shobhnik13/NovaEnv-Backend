@@ -9,6 +9,6 @@ projectRouter.post('/analytics', requireAuth, analytics)
 projectRouter.post('/projects', requireAuth, listProjects)
 projectRouter.post('/projects/:projectId', requireAuth, listProjectById)
 projectRouter.put('/projects/:projectId', requireAuth, editProject)
-projectRouter.delete('/projects/projectId', requireAuth, deleteProject)
+projectRouter.delete('/projects/:projectId', requireAuth, deleteProject)
 
 module.exports = projectRouter;
