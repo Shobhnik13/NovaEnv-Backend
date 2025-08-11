@@ -64,11 +64,11 @@ const createEnviornment = async (req, res) => {
         });
 
         await environment.save();
-        res.status(200).json('Environment created successfully');
+        res.status(200).json({ message: 'Environment created successfully' });
     } catch (error) {
-        if (error.code === 11000) {
-            return res.status(400).json({ error: 'Environment name already exists in this project' });
-        }
+        // if (error.code === 11000) {
+        //     return res.status(400).json({ error: 'Environment name already exists in this project' });
+        // }
         console.error('Create environment error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -97,9 +97,9 @@ const editEnviornment = async (req, res) => {
         await enviornment.save();
         res.status(200).json({ message: "Enviornment updated successfully" });
     } catch (error) {
-        if (error.code === 11000) {
-            return res.status(400).json({ error: 'Environment name already exists in this project' });
-        }
+        // if (error.code === 11000) {
+        //     return res.status(400).json({ error: 'Environment name already exists in this project' });
+        // }
         console.error('Update environment error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }

@@ -16,10 +16,10 @@ const variableSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-variableSchema.index({ environmentId: 1, key: 1 }, { unique: true });
-variableSchema.index({ projectId: 1 });
-variableSchema.index({ environmentId: 1, createdAt: -1 });
-variableSchema.index({ variableId: 1 })
+variableSchema.index({ enviornmentId: 1 });              // Find variables in an environment
+variableSchema.index({ projectId: 1 });                  // Find variables in a project
+variableSchema.index({ enviornmentId: 1, createdAt: -1 });// Sort variables by creation date
+variableSchema.index({ variableId: 1 });                  // Lookup by custom variableId
 
 const Variable = mongoose.model('Variable', variableSchema)
 module.exports = Variable

@@ -22,8 +22,11 @@ const createProject = async (req, res) => {
             userId: user._id
         });
         await project.save();
-        res.status(200).json("Project created successfully");
+        res.status(200).json({ message: "Project created successfully" });
     } catch (error) {
+        // if (error.code === 11000) {
+        //     return res.status(400).json({ error: 'Project name already exists' });
+        // }
         console.error('Create project error:', error);
         res.status(500).json({
             error: 'Internal server error',
@@ -137,8 +140,8 @@ const listProjectById = async (req, res) => {
             return res.status(404).json({ error: 'Project not found' });
         }
         const envs = await Enviornment.find({ projectId: project?._id })
-        .select('name updatedAt enviornmentId -_id ')
-        .sort({ updatedAt: -1 })
+            .select('name updatedAt enviornmentId -_id ')
+            .sort({ updatedAt: -1 })
 
         res.json({
             projectId: project.projectId,
@@ -189,15 +192,15 @@ const editProject = async (req, res) => {
             projectId: projectId,
             userId: user?._id
         },
-        updateFields,
+            updateFields,
             { new: true }
         )
-        
+
         if (!project) {
             return res.status(404).json({ error: 'Project not found' });
         }
 
-        res.json(project);
+        res.status(200).json({message: "Project updated successfully"});
     } catch (error) {
         console.error('Edit project error:', error);
         res.status(500).json({

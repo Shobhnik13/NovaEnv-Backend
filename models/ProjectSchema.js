@@ -14,8 +14,8 @@ const projectSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now }
 });
 
-projectSchema.index({ projectId: 1 });
-projectSchema.index({ userId: 1, createdAt: -1 });
+projectSchema.index({ projectId: 1 });                   // For fast lookup by custom projectId
+projectSchema.index({ userId: 1, createdAt: -1 });       // For getting a user's projects sorted by creation date
 
 const Project = mongoose.model('Project', projectSchema)
 module.exports = Project;

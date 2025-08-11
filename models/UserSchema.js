@@ -11,5 +11,9 @@ const userSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 })
 
+userSchema.index({ email: 1 });                          // Optional: For fast lookup by email
+userSchema.index({ apiKey: 1 });                         // Optional: For looking up by API key
+
+
 const User = mongoose.model('User', userSchema)
 module.exports = User;

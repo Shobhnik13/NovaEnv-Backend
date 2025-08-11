@@ -14,10 +14,9 @@ const enviornmentSchema = mongoose.Schema({
     updatedAt: { type: Date, default: Date.now }
 })
 
-enviornmentSchema.index({ projectId: 1, name: 1 }, { unique: true });
-enviornmentSchema.index({ projectId: 1, createdAt: -1 });
+enviornmentSchema.index({ projectId: 1 });              // For finding all environments of a project
+enviornmentSchema.index({ projectId: 1, createdAt: -1 });// For sorting environments by creation date
 enviornmentSchema.index({ enviornmentId: 1 });
-
 
 const Enviornment = mongoose.model('Enviornment', enviornmentSchema);
 module.exports = Enviornment;
