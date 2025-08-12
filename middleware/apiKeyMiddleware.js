@@ -2,8 +2,13 @@ const User = require("../models/UserSchema");
 
 const requireApiKey = async (req, res, next) => {
     try {
-        const apiKey = req.headers['x-api-key'];
-        if (!apiKey) {
+        const authHeader = req.headers.authorization
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ error: 'API key required' });
+        }
+
+        const apiKey = authHeader.substring(7);
+        if (!apiKey.trim()) {
             return res.status(401).json({ error: 'API key required' });
         }
         const user = await User.findOne({ apiKey })

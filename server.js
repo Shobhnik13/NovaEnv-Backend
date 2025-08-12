@@ -10,6 +10,8 @@ const authRouter = require('./routes/AuthRoutes');
 const projectRouter = require('./routes/ProjectRoutes');
 const enviornmentRouter = require('./routes/EnviornmentRoutes');
 const variableRouter = require('./routes/VariableRoutes');
+const cliAuthRouter = require('./routes/CliAuthRouter');
+const cliProjectRouter = require('./routes/CliProjectRouter');
 
 const app = express()
 
@@ -45,14 +47,18 @@ app.use('/api/v1/project', projectRouter)
 app.use('/api/v1/enviornment', enviornmentRouter)
 app.use('/api/v1/variable', variableRouter)
 
+// cli routes
+app.use('/api/v1/cli/auth', cliAuthRouter)
+app.use('/api/v1/cli/project', cliProjectRouter)
+
 const startServer = async () => {
-    try{
+    try {
         await connectDB()
         const PORT = config.port
         app.listen(PORT, () => {
             console.log(chalk.green(`✅ Server is running on port ${PORT}`));
         });
-    }catch(error){
+    } catch (error) {
         console.error(chalk.red('❌ Error starting server:', error.message));
         process.exit(1);
     }
