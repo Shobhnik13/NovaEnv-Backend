@@ -15,7 +15,7 @@ const listProjectById = async (req, res) => {
     }
     res.json({
         success: true,
-        data: projectEnvironments
+        data: envs
     });
 }
 

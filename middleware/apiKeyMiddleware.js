@@ -13,7 +13,7 @@ const requireApiKey = async (req, res, next) => {
         }
         const user = await User.findOne({ apiKey })
         if (!user) {
-            return res.status(401).json({ error: 'Invalid API key' });
+            return res.status(401).json({ error: 'Invalid or terminated API key, try to generate a new one from web dashboard' });
         }
         req.user = user
         next()
