@@ -12,6 +12,8 @@ const enviornmentRouter = require('./routes/EnviornmentRoutes');
 const variableRouter = require('./routes/VariableRoutes');
 const cliAuthRouter = require('./routes/CliAuthRouter');
 const cliProjectRouter = require('./routes/CliProjectRouter');
+const cliEnviornmentRouter = require('./routes/CliEnviornmentRouter');
+const cliVariableRouter = require('./routes/cliVariableRouter');
 
 const app = express()
 
@@ -50,6 +52,8 @@ app.use('/api/v1/variable', variableRouter)
 // cli routes
 app.use('/api/v1/cli/auth', cliAuthRouter)
 app.use('/api/v1/cli/project', cliProjectRouter)
+app.use('/api/v1/cli/enviornment', cliEnviornmentRouter)
+app.use('/api/v1/cli/variable', cliVariableRouter)
 
 const startServer = async () => {
     try {
