@@ -33,7 +33,10 @@ morgan.token('timestamp', () => new Date().toISOString());
 const format = '[:timestamp] :method :urlOnly :statusColored :response-time ms';
 const skipOptions = (req) => req.method === 'OPTIONS';
 
-app.use(morgan(format, { skip: skipOptions }));
+app.use(morgan(format, {
+    skip: (req, res) => skipOptions(req) || req.path === '/health'
+}));
+
 
 // middlewares
 app.use(express.json());
